@@ -11,23 +11,23 @@ game.tables.getName(tableName).draw().then((result) => {
     const producedResults = [];
 	for(let i = 0; i < numberOfDraws; i++){
 		const executedRoll = result.roll;
+		console.log("Executed Roll:", executedRoll);
 		producedResults.push(result.results);
 	}
 
     // Handle the results here
-    console.log("Executed Roll:", executedRoll);
+    
     console.log("Produced Results:", producedResults);
-
-    // You can perform further actions with the results
-    console.log(producedResults.img)
     
     /* List of tile image options */
-    const img = producedResults.img;
-   
+	
      // Create the tile inside the .then() block
 	 for(let i = 0; i < numberOfDraws; i++){
-		 currentImageData = imageData(i,img[i]);
-		 return canvas.scene.createEmbeddedDocuments('Tile', [currentImageDatamageData]);
+		const test = producedResults[i];
+		const test2 = test[0];
+		 const currentImageData = imageData(i,test2.img, test2.text);
+		 const testArray = [currentImageData.name,  currentImageData.img, currentImageData.width, currentImageData.height];
+		 return canvas.scene.createEmbeddedDocuments("Token", testArray);
 	 }
      
   })
@@ -40,14 +40,14 @@ game.tables.getName(tableName).draw().then((result) => {
     console.error("Error during draw:", error);
   });
   
-  function imageData(i, imageSrc){
+  function imageData(i, imageSrc, imageName){
 	  //Defining tile data
-	  data = {
-        x: 0 + i*(imageWidth + 50),
+	  return {
+		name: imageName,
+		img: imageSrc,
+		width: 1000,
+        height: 1000,
+        x: 0 + i*(1000 + 50),
         y: 0,
-        width: imageWidth,
-        height: imageHeight,
-        texture: {src: imageSrc},
-    }
-	return[data];
+    };
   }
