@@ -6,9 +6,10 @@ tableName = 'Bofa';
 
 async function main() {
 	try {
-		const result = await game.tables.getName(tableName).drawMany(numberOfDraws);
+		const result = await game.tables.getName(tableName).drawMany(numberOfDraws, {rollMode : CONST.DICE_ROLL_MODES.BLIND});
+		
 		// The draw operation was successful    
-		producedResults = result.results;
+		producedResults = structuredClone(result.results);
 		for(let i = 0; i < numberOfDraws; i++){
 			drawnCards = []
 			
@@ -16,7 +17,6 @@ async function main() {
 			if(producedResults[i].text.toLowerCase().includes("sticky")) {
 				// Todo: Sticky card found, roll twice more and make sure you get two more results that do not contain the strings "shuffle" or "sticky" inside them.
 				// Todo: Add the newly rolled cards to the drawnCards array.
-				console.log("STICKY CARD ALERT");
 				const stickyCardIndex = i;
 				let additionalRolls = 2; // You want to roll twice more
 
@@ -31,8 +31,8 @@ async function main() {
 							} else {
 								additionalResult.flags.sticky = '';
 							}
-							console.log("Pushing additional card into draw pile")
-							drawnCards.push(additionalResult);
+							console.log("Pushing additional card into draw pile");
+							drawnCards.push(structuredClone(additionalResult));
 							additionalRolls--; // Decrease the number of additional rolls needed
 							if (additionalRolls === 0) break; // Stop rolling if you have enough results
 						}
@@ -46,6 +46,17 @@ async function main() {
 
 				// Start rolling and filtering
 				await rollAndFilter();
+				
+				// Todo: This code deletes rolls but the timing is off due to async draw calls. Please fix!
+				setTimeout(() => {
+					result.roll.toMessage().then((message) => {
+						message.delete();
+					});
+					additionalResults.roll.toMessage().then((message) => {
+						message.delete();
+					});
+				}, 100);
+				
 			} else {
 				producedResults[i].flags.sticky = '';
 				drawnCards.push(producedResults[i]);
