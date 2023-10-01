@@ -4,9 +4,11 @@ imageHeight = 500;
 
 tableName = 'Bofa';
 
+messages = [];
+
 async function main() {
 	try {
-		const result = await game.tables.getName(tableName).drawMany(numberOfDraws, {rollMode : CONST.DICE_ROLL_MODES.BLIND});
+		const result = await game.tables.getName(tableName).drawMany(numberOfDraws, {rollMode : CONST.DICE_ROLL_MODES.PRIVATE});
 		
 		// The draw operation was successful    
 		producedResults = structuredClone(result.results);
@@ -22,7 +24,7 @@ async function main() {
 
 				// Function to roll and filter results
 				const rollAndFilter = async () => {
-					const additionalResults = await game.tables.getName(tableName).drawMany(2);
+					const additionalResults = await game.tables.getName(tableName).drawMany(2, {rollMode : CONST.DICE_ROLL_MODES.PRIVATE});
 
 					for (additionalResult of additionalResults.results) {
 						if (!additionalResult.text.toLowerCase().includes("shuffle") && !additionalResult.text.toLowerCase().includes("sticky")) {
@@ -48,14 +50,14 @@ async function main() {
 				await rollAndFilter();
 				
 				// Todo: This code deletes rolls but the timing is off due to async draw calls. Please fix!
-				setTimeout(() => {
-					result.roll.toMessage().then((message) => {
-						message.delete();
-					});
-					additionalResults.roll.toMessage().then((message) => {
-						message.delete();
-					});
-				}, 100);
+				//setTimeout(() => {
+				//	result.roll.toMessage().then((message) => {
+				//		message.delete();
+				//	});
+				//	additionalResults.roll.toMessage().then((message) => {
+				//		message.delete();
+				//	});
+				//}, 100);
 				
 			} else {
 				producedResults[i].flags.sticky = '';
@@ -72,24 +74,12 @@ async function main() {
 					currentImageData = imageData(i, 1, drawnCards[cardIndex].img, drawnCards[cardIndex].text);				
 					// Define the message content
 					messageContent = "Sticky card below nr #" + cardNr + " is " + drawnCards[cardIndex].text;
-
-					// Create the private GM message
-					ChatMessage.create({
-					  speaker: ChatMessage.getSpeaker({actor}),
-					  content: messageContent,
-					  whisper: ChatMessage.getWhisperRecipients('GM'), // Set the whisper target to "GM"
-					});
+					messages.push(messageContent)
 				} else {
 					currentImageData = imageData(i, 0, drawnCards[cardIndex].img, drawnCards[cardIndex].text);
 					// Define the message content
 					messageContent = "Card nr #" + cardNr + " is " + drawnCards[cardIndex].text;
-
-					// Create the private GM message
-					ChatMessage.create({
-					  speaker: ChatMessage.getSpeaker({actor}),
-					  content: messageContent,
-					  whisper: ChatMessage.getWhisperRecipients('GM'), // Set the whisper target to "GM"
-					});
+					messages.push(messageContent)
 				}
 				console.log(currentImageData);
 				canvas.scene.createEmbeddedDocuments('Tile', [currentImageData]);
@@ -98,6 +88,17 @@ async function main() {
 	} catch (error) {
 		// Handle any errors that may occur during the draw
 		console.error("Error during draw:", error);
+	}
+	
+	await new Promise(r => setTimeout(r, 500));
+	
+	for (let i = 0; i < messages.length; i++) {
+		// Create the private GM message
+		await ChatMessage.create({
+		  speaker: ChatMessage.getSpeaker({actor: actor}),
+		  content: messages[i],
+		  whisper: ChatMessage.getWhisperRecipients('GM'), // Set the whisper target to "GM"
+		});
 	}
 }
   
