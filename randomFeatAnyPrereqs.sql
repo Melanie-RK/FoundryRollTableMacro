@@ -1,36 +1,33 @@
-DECLARE @Count INT;
-SET @Count = 0;
+DECLARE @DesiredPrerequisites INT = 0; -- Change this to your desired number of prerequisites
+DECLARE @ResultCount INT = 5; -- Change this to your desired result count
 
-WHILE (@Count <= 0)
-BEGIN
-   -- Declare a table variable to store the selected row
-   DECLARE @SelectedRow TABLE (
-       [name] NVARCHAR(MAX),
-       [prerequisites] NVARCHAR(MAX),
-       [prerequisite_feats] NVARCHAR(MAX),
-       [prerequisite_skills] NVARCHAR(MAX),
-       NonNullColumnCount INT
-   );
+DECLARE @SelectedRow TABLE (
+   [name] NVARCHAR(MAX),
+   [Benefit] NVARCHAR(MAX),
+   [prerequisites] NVARCHAR(MAX),
+   [prerequisite_feats] NVARCHAR(MAX),
+   [prerequisite_skills] NVARCHAR(MAX)
+);
 
-   -- Insert the selected row into the table variable
-   INSERT INTO @SelectedRow
-   SELECT TOP (1) 
-       [name], [prerequisites], [prerequisite_feats], [prerequisite_skills],
-       (CASE WHEN prerequisites IS NOT NULL THEN 1 ELSE 0 END +
-        CASE WHEN prerequisite_feats IS NOT NULL THEN 1 ELSE 0 END +
-        CASE WHEN prerequisite_skills IS NOT NULL THEN 1 ELSE 0 END) AS NonNullColumnCount
-   FROM [PFDB].[dbo].[Feats]
-   ORDER BY NEWID();
+INSERT INTO @SelectedRow ([name], [Benefit], [prerequisites], [prerequisite_feats], [prerequisite_skills])
+SELECT [name],[Benefit],[prerequisites],[prerequisite_feats],[prerequisite_skills] FROM Feats;
 
-   -- Fetch the value of NonNullColumnCount into @Count
-   SELECT TOP 1 @Count = NonNullColumnCount FROM @SelectedRow;
-
-   -- Display @Count for verification (you can remove this line in your final query)
-   PRINT 'Count: ' + CAST(@Count AS NVARCHAR(10));
-
-   -- Display the selected record
-   SELECT [name], [prerequisites], [prerequisite_feats], [prerequisite_skills]
-   FROM @SelectedRow;
-   
-   -- DROP TABLE #TempTable (if not needed)
-END
+WITH SplitPrerequisites AS (
+    SELECT
+        [name],
+		[Benefit],
+        [prerequisites],
+        [prerequisite_feats],
+        [prerequisite_skills],
+        (
+            CASE WHEN [prerequisites] IS NOT NULL THEN LEN([prerequisites]) - LEN(REPLACE([prerequisites], ',', '')) + 1 ELSE 0 END
+            --Todo: Make it so that we check for the prerequisite count of the lines below when prerequisites is empty/NULL.
+            --+ CASE WHEN [prerequisite_feats] IS NOT NULL THEN LEN([prerequisite_feats]) - LEN(REPLACE([prerequisite_feats], ',', '')) + 1 ELSE 0 END
+            --+ CASE WHEN [prerequisite_skills] IS NOT NULL THEN LEN([prerequisite_skills]) - LEN(REPLACE([prerequisite_skills], ',', '')) + 1 ELSE 0 END
+        ) AS TotalPrerequisitesCount
+    FROM @SelectedRow
+)
+SELECT TOP (@ResultCount) *
+FROM SplitPrerequisites
+WHERE TotalPrerequisitesCount = @DesiredPrerequisites
+ORDER BY NEWID();
