@@ -1,4 +1,4 @@
-DECLARE @DesiredPrerequisites INT = 0; -- Change this to your desired number of prerequisites
+DECLARE @DesiredPrerequisites INT = 1; -- Change this to your desired number of prerequisites
 DECLARE @ResultCount INT = 5; -- Change this to your desired result count
 
 DECLARE @SelectedRow TABLE (
@@ -32,5 +32,14 @@ WITH SplitPrerequisites AS (
 )
 SELECT TOP (@ResultCount) *
 FROM SplitPrerequisites
-WHERE TotalPrerequisitesCount = @DesiredPrerequisites
+WHERE TotalPrerequisitesCount = @DesiredPrerequisites AND 
+(
+CHARINDEX(LOWER('Cha '), [prerequisites]) >0 OR CHARINDEX(LOWER('Charisma '), [prerequisites]) >0 OR
+CHARINDEX(LOWER('Str '), [prerequisites]) >0 OR CHARINDEX(LOWER('Strength '), [prerequisites]) >0 OR 
+CHARINDEX(LOWER('Dex '), [prerequisites]) >0 OR CHARINDEX(LOWER('Dexterity '), [prerequisites]) >0 OR 
+CHARINDEX(LOWER('Con '), [prerequisites]) >0 OR CHARINDEX(LOWER('Constitution '), [prerequisites]) >0 OR 
+CHARINDEX(LOWER('Int '), [prerequisites]) >0 OR CHARINDEX(LOWER('Intelligence '), [prerequisites]) >0 OR 
+CHARINDEX(LOWER('Wis '), [prerequisites]) >0 OR CHARINDEX(LOWER('Wisdom '), [prerequisites]) >0 OR
+[prerequisite_skills] IS NOT NULL
+) 
 ORDER BY NEWID();
