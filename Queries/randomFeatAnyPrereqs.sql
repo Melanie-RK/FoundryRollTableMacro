@@ -20,10 +20,13 @@ WITH SplitPrerequisites AS (
         [prerequisite_feats],
         [prerequisite_skills],
         (
-            CASE WHEN [prerequisites] IS NOT NULL THEN LEN([prerequisites]) - LEN(REPLACE([prerequisites], ',', '')) + 1 ELSE 0 END
-            --Todo: Make it so that we check for the prerequisite count of the lines below when prerequisites is empty/NULL.
-            --+ CASE WHEN [prerequisite_feats] IS NOT NULL THEN LEN([prerequisite_feats]) - LEN(REPLACE([prerequisite_feats], ',', '')) + 1 ELSE 0 END
-            --+ CASE WHEN [prerequisite_skills] IS NOT NULL THEN LEN([prerequisite_skills]) - LEN(REPLACE([prerequisite_skills], ',', '')) + 1 ELSE 0 END
+			CASE
+				WHEN [prerequisites] IS NOT NULL AND CHARINDEX(';', [prerequisites]) > 0 THEN LEN([prerequisites]) - LEN(REPLACE([prerequisites], ';', '')) + 1
+				WHEN [prerequisites] IS NOT NULL AND CHARINDEX(',', [prerequisites]) > 0 THEN LEN([prerequisites]) - LEN(REPLACE([prerequisites], ',', ''))  + 1
+				WHEN [prerequisites] IS NOT NULL AND CHARINDEX('or', [prerequisites]) > 0 THEN LEN([prerequisites]) - LEN(REPLACE([prerequisites], 'or', '')) + 1
+				WHEN [prerequisites] IS NOT NULL AND LEN([prerequisites]) > 0 THEN 1
+				ELSE 0
+			END
         ) AS TotalPrerequisitesCount
     FROM @SelectedRow
 )
