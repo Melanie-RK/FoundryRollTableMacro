@@ -1,4 +1,4 @@
-  SELECT TOP (1) [class], [class_feature] AS feature_name, [description], [archetype], [sub_feature_of]
-  FROM [PFDB].[dbo].[ClassFeaturesSource]
+  SELECT TOP (1) [Name], [Description]
+	FROM [PFDB].[dbo].[Traits_Drawbacks]
+	WHERE [Tag] != 'drawback'
   ORDER BY NEWID();
-
