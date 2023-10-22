@@ -1,4 +1,4 @@
-DECLARE @DesiredPrerequisites INT = 2; -- Change this to your desired number of prerequisites
+DECLARE @DesiredPrerequisites INT = 0; -- Change this to your desired number of prerequisites
 DECLARE @ResultCount INT = 5; -- Change this to your desired result count
 
 DECLARE @SelectedRow TABLE (
@@ -68,6 +68,7 @@ DECLARE @Pattern13 NVARCHAR(100) = N'%base attack bonus%';
 DECLARE @Pattern14 NVARCHAR(100) = N'%proficient with armor%';
 DECLARE @Pattern15 NVARCHAR(100) = N'%proficient with shield%';
 DECLARE @Pattern16 NVARCHAR(100) = N'%proficient with weapon%';
+DECLARE @Pattern17 NVARCHAR(100) = N'% rank%';
 
 DECLARE prerequisite_cursor CURSOR FOR
 SELECT id, prerequisites
@@ -142,7 +143,8 @@ BEGIN
 		LOWER(@Substring) NOT LIKE @Pattern13 AND
 		LOWER(@Substring) NOT LIKE @Pattern14 AND
 		LOWER(@Substring) NOT LIKE @Pattern15 AND
-		LOWER(@Substring) NOT LIKE @Pattern16
+		LOWER(@Substring) NOT LIKE @Pattern16 AND
+		LOWER(@Substring) NOT LIKE @Pattern17
         BEGIN
             SET @IsValid = 0;
             BREAK;
