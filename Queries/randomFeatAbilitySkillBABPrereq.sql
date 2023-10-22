@@ -1,4 +1,4 @@
-DECLARE @DesiredPrerequisites INT = 1; -- Change this to your desired number of prerequisites
+DECLARE @DesiredPrerequisites INT = 2; -- Change this to your desired number of prerequisites
 DECLARE @ResultCount INT = 5; -- Change this to your desired result count
 
 DECLARE @SelectedRow TABLE (
@@ -63,8 +63,11 @@ DECLARE @Pattern8 NVARCHAR(100) = N'%constitution [0-9]%';
 DECLARE @Pattern9 NVARCHAR(100) = N'%strength [0-9]%';
 DECLARE @Pattern10 NVARCHAR(100) = N'%wisdom [0-9]%';
 DECLARE @Pattern11 NVARCHAR(100) = N'%dexterity [0-9]%';
-DECLARE @Pattern12 NVARCHAR(100) = N'%BAB%';
+DECLARE @Pattern12 NVARCHAR(100) = N'%BAB %';
 DECLARE @Pattern13 NVARCHAR(100) = N'%base attack bonus%';
+DECLARE @Pattern14 NVARCHAR(100) = N'%proficient with armor%';
+DECLARE @Pattern15 NVARCHAR(100) = N'%proficient with shield%';
+DECLARE @Pattern16 NVARCHAR(100) = N'%proficient with weapon%';
 
 DECLARE prerequisite_cursor CURSOR FOR
 SELECT id, prerequisites
@@ -136,7 +139,10 @@ BEGIN
 		LOWER(@Substring) NOT LIKE @Pattern10 AND
 		LOWER(@Substring) NOT LIKE @Pattern11 AND
 		LOWER(@Substring) NOT LIKE @Pattern12 AND
-		LOWER(@Substring) NOT LIKE @Pattern13
+		LOWER(@Substring) NOT LIKE @Pattern13 AND
+		LOWER(@Substring) NOT LIKE @Pattern14 AND
+		LOWER(@Substring) NOT LIKE @Pattern15 AND
+		LOWER(@Substring) NOT LIKE @Pattern16
         BEGIN
             SET @IsValid = 0;
             BREAK;
@@ -170,5 +176,4 @@ END
 CLOSE prerequisite_cursor;
 DEALLOCATE prerequisite_cursor;
 
-SELECT * FROM @ValidRow WHERE TotalPrerequisitesCount <= @DesiredPrerequisites;
-
+SELECT * FROM @ValidRow WHERE TotalPrerequisitesCount = @DesiredPrerequisites;
