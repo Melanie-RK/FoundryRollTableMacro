@@ -178,4 +178,7 @@ END
 CLOSE prerequisite_cursor;
 DEALLOCATE prerequisite_cursor;
 
-SELECT * FROM @ValidRow WHERE TotalPrerequisitesCount = @DesiredPrerequisites;
+SELECT TOP (@ResultCount) *
+FROM @ValidRow
+WHERE TotalPrerequisitesCount = @DesiredPrerequisites
+ORDER BY NEWID();
