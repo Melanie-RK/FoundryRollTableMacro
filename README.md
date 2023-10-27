@@ -74,7 +74,7 @@ Change this to your desired result count:
  
     DECLARE @ResultCount INT = 5;
 	
-### Selecting a random feat
+#### Selecting a random feat
 
 Run randomFeatQuery to select a random feat. 
 If you want to select more than one feat, you can change this value:
