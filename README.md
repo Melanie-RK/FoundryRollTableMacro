@@ -68,6 +68,7 @@ Change this to your desired result count:
 Run randomFeatAnyPreqeq.sql to select a random feat that can have any type of prerequisites
 
 Change this to your desired number of prerequisites:
+
     DECLARE @DesiredPrerequisites INT = 0;
 	
 Change this to your desired result count:
