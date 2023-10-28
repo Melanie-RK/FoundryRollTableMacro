@@ -83,3 +83,15 @@ Run randomFeatQuery to select a random feat.
 If you want to select more than one feat, you can change this value:
 
     SELECT TOP(1)
+
+#### Selecting a random spell
+
+Run randomSpellQuery to select a random spell based on the desired spell level.
+
+To select the desired spell level, you can change this value:
+
+    DECLARE @DesiredSpellLevel INT = 5;
+
+If you want to select more than one spell, you can change this value:
+
+    SELECT TOP(1)
