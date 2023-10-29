@@ -8,4 +8,5 @@ WHERE @DesiredSpellLevel = (
     FROM (VALUES
         ([sorcerer]), ([wizard]), ([cleric]), ([druid]), ([ranger]), ([bard]), ([alchemist]), ([summoner]), ([witch]), ([inquisitor]), ([oracle]), ([antipaladin]), ([magus]), ([adept]), ([bloodrager]), ([shaman]), ([medium]), ([occultist]), ([mesmerist]), ([skald]), ([investigator]), ([hunter])
     ) AS AllValues(MIN_VALUE)
-);
+)
+ORDER BY NEWID();
