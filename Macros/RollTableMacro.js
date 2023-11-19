@@ -110,7 +110,8 @@ async function main() {
 		width: imageWidth,
 		height: imageHeight,
 		x: 100 + cardIndex*(imageWidth + 50),
-		y: 100 + stickyIndex*50
+		y: 100 + stickyIndex*50,
+		z: 1 + stickyIndex*-10
     };
   }
   
